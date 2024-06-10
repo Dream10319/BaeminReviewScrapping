@@ -95,57 +95,69 @@ namespace BaeminReviewScrapping
                             }));
                             File.WriteAllText("log.txt", Environment.NewLine + Lat.Text + ", " + Lon.Text);
 
-                            int catnum = 0;
                             foreach (var category in categories)
                             {
-                                catnum++;
                                 int shopcount = 2000;
                                 int totalcount = 0;
                                 for (int i = 0; i <= (int)(shopcount / 25); i++)
                                 {
-                                    string strShop = string.Format("https://shopdp-api.baemin.com/v3/BAEMIN/shops?displayCategory={3}&longitude={0}&latitude={1}&sort=SORT__DEFAULT&filter=&offset={2}&limit=25&extension=&perseusSessionId=1718023403008.788454282780365941.FWy8AA9FNv&memberNumber=000000000000&sessionId=b4e3292329dfd570f054c8&carrier=302780&site=7jWXRELC2e&dvcid=OPUD6086af457479a7bb&adid=aede849f-5e9c-499f-827f-cb4e5c65d801&deviceModel=SM-G9500&appver=12.23.0&oscd=2&osver=32&dongCode=11140102&zipCode=04522&ActionTrackingKey=Organic", Longitude.ToString(), Latitude.ToString(), 25 * i, category["code"].ToString());
-                                    RestClient shopClient = new RestClient(strShop);
-                                    string strReturnShop = shopClient.ExecuteGet(request).Content;
-                                    dynamic datashop = jss.Deserialize<dynamic>(strReturnShop);
-                                    dynamic shops = datashop["data"]["shops"];
-                                    shopcount = (int)datashop["data"]["totalCount"];
-
-                                    foreach (var shop in shops)
+                                    strUrl = string.Format("https://shopdp-api.baemin.com/v3/BAEMIN/shops?displayCategory={3}&longitude={0}&latitude={1}&sort=SORT__DEFAULT&filter=&offset={2}&limit=25&extension=&perseusSessionId=1718023403008.788454282780365941.FWy8AA9FNv&memberNumber=000000000000&sessionId=b4e3292329dfd570f054c8&carrier=302780&site=7jWXRELC2e&dvcid=OPUD6086af457479a7bb&adid=aede849f-5e9c-499f-827f-cb4e5c65d801&deviceModel=SM-G9500&appver=12.23.0&oscd=2&osver=32&dongCode=11140102&zipCode=04522&ActionTrackingKey=Organic", Longitude.ToString(), Latitude.ToString(), 25 * i, category["code"].ToString());
+                                    client = new RestClient(strUrl);
+                                    strReturn = client.ExecuteGet(request).Content;
+                                    if(strReturn.Contains("SUCCESS"))
                                     {
-                                        totalcount++;
-                                        string shopnumber = shop["shopInfo"]["shopNumber"].ToString();
-                                        if (!string.IsNullOrEmpty(shopnumber))
+                                        data = jss.Deserialize<dynamic>(strReturn);
+                                        dynamic shops = data["data"]["shops"];
+                                        shopcount = (int)data["data"]["totalCount"];
+
+                                        foreach (var shop in shops)
                                         {
-                                            string reviewinfourl = string.Format("https://review-api.baemin.com/v1/shops/{0}/reviews/info?sessionId=1447226b282d5e40f677b5a1d37&carrier=302780&site=7jWXRELC2e&dvcid=OPUD6086af457479a7bb&adid=aede849f-5e9c-499f-827f-cb4e5c65d801&deviceModel=SM-G9500&appver=12.23.0&oscd=2&osver=32&dongCode=11140102&zipCode=04522&ActionTrackingKey=Organic", shopnumber);
-                                            RestClient reviewClient = new RestClient(reviewinfourl);
-                                            RestRequest reviewRequest = new RestRequest();
-                                            reviewRequest.AddHeader("Accept-Encoding", "gzip, deflate");
-                                            reviewRequest.AddHeader("Authorization", "bearer guest");
-                                            reviewRequest.AddHeader("Connection", "Keep-Alive");
-                                            reviewRequest.AddHeader("Host", "review-api.baemin.com");
-                                            reviewRequest.AddHeader("User-Agent", "and1_12.23.0");
-                                            reviewRequest.AddHeader("USER-BAEDAL", "W/OnG34HSvOVmxn4McyeRzEK3Ldc9+ruPokFIKgQcm0zVU8aOlNuihy2TNW+7I7ZBORlK3kvRun7bOtwlyMA9PnUeLy01xw69qCQLwVBmJdm/hJB8mRTF8vkzRUt/1qkIjb9Tto92g2qIH9ldixRCvPKlFkepp+bOCN6lWvdTIvEx8s0W2jVWA4NWbjnwqqLvKR0wjQxP9pPG3heaCdvvA==");
-                                            string reviewinfo = reviewClient.ExecuteGet(reviewRequest).Content;
-                                            dynamic viewinfos = jss.Deserialize<dynamic>(reviewinfo);
-                                            int totalnum = (int)viewinfos["data"]["stats"]["reviewCount"];
-
-                                            for (int j = 0; j <= totalnum / 25; j++)
+                                            totalcount++;
+                                            string shopnumber = shop["shopInfo"]["shopNumber"].ToString();
+                                            if (!string.IsNullOrEmpty(shopnumber))
                                             {
-                                                string reviewurl = string.Format("https://review-api.baemin.com/v1/shops/{0}/reviews?sort=RECOMMENDATION&filter=ALL&offset={1}&limit=25&sessionId=1447226b282d5e40f677b5a1d37&carrier=302780&site=7jWXRELC2e&dvcid=OPUD6086af457479a7bb&adid=aede849f-5e9c-499f-827f-cb4e5c65d801&deviceModel=SM-G9500&appver=12.23.0&oscd=2&osver=32&dongCode=11140102&zipCode=04522&ActionTrackingKey=Organic", shopnumber, j * 25);
-                                                reviewClient = new RestClient(reviewurl);
-                                                string review = reviewClient.ExecuteGet(reviewRequest).Content;
-                                                var dir = "Reviews";
-                                                if (!Directory.Exists(dir))
-                                                    Directory.CreateDirectory(dir);
-                                                File.WriteAllText(string.Format(@"{0}\review-{1}-{2}-{3}.json", dir, locationNum.ToString(), shopnumber, j.ToString()), review);
-                                                this.Invoke(new Action(() =>
+                                                strUrl = string.Format("https://review-api.baemin.com/v1/shops/{0}/reviews/info?sessionId=1447226b282d5e40f677b5a1d37&carrier=302780&site=7jWXRELC2e&dvcid=OPUD6086af457479a7bb&adid=aede849f-5e9c-499f-827f-cb4e5c65d801&deviceModel=SM-G9500&appver=12.23.0&oscd=2&osver=32&dongCode=11140102&zipCode=04522&ActionTrackingKey=Organic", shopnumber);
+                                                client = new RestClient(strUrl);
+                                                RestRequest reviewRequest = new RestRequest();
+                                                reviewRequest.AddHeader("Accept-Encoding", "gzip, deflate");
+                                                reviewRequest.AddHeader("Authorization", "bearer guest");
+                                                reviewRequest.AddHeader("Connection", "Keep-Alive");
+                                                reviewRequest.AddHeader("Host", "review-api.baemin.com");
+                                                reviewRequest.AddHeader("User-Agent", "and1_12.23.0");
+                                                reviewRequest.AddHeader("USER-BAEDAL", "W/OnG34HSvOVmxn4McyeRzEK3Ldc9+ruPokFIKgQcm0zVU8aOlNuihy2TNW+7I7ZBORlK3kvRun7bOtwlyMA9PnUeLy01xw69qCQLwVBmJdm/hJB8mRTF8vkzRUt/1qkIjb9Tto92g2qIH9ldixRCvPKlFkepp+bOCN6lWvdTIvEx8s0W2jVWA4NWbjnwqqLvKR0wjQxP9pPG3heaCdvvA==");
+                                                strReturn = client.ExecuteGet(reviewRequest).Content;
+                                                if (strReturn.Contains("SUCCESS"))
                                                 {
-                                                    progressBar1.Value = (int)((10000 * catnum * totalcount) / (shopcount * 15));
-                                                }));
-                                            }
+                                                    data = jss.Deserialize<dynamic>(strReturn);
+                                                    int totalnum = (int)data["data"]["stats"]["reviewCount"];
 
+                                                    for (int j = 0; j <= totalnum / 25; j++)
+                                                    {
+                                                        strUrl = string.Format("https://review-api.baemin.com/v1/shops/{0}/reviews?sort=RECOMMENDATION&filter=ALL&offset={1}&limit=25&sessionId=1447226b282d5e40f677b5a1d37&carrier=302780&site=7jWXRELC2e&dvcid=OPUD6086af457479a7bb&adid=aede849f-5e9c-499f-827f-cb4e5c65d801&deviceModel=SM-G9500&appver=12.23.0&oscd=2&osver=32&dongCode=11140102&zipCode=04522&ActionTrackingKey=Organic", shopnumber, j * 25);
+                                                        client = new RestClient(strUrl);
+                                                        string review = client.ExecuteGet(reviewRequest).Content;
+                                                        if(review.Contains("SUCCESS"))
+                                                        {
+                                                            var dir = "Reviews";
+                                                            if (!Directory.Exists(dir))
+                                                                Directory.CreateDirectory(dir);
+                                                            File.WriteAllText(string.Format(@"{0}\review-{1}-{2}-{3}.json", dir, locationNum.ToString(), shopnumber, j.ToString()), review);
+                                                            this.Invoke(new Action(() =>
+                                                            {
+                                                                progressBar1.Value = (int)((10000 * totalcount) / shopcount);
+                                                            }));
+                                                        }       
+                                                    }
+                                                }
+
+                                            }
                                         }
                                     }
+                                    else
+                                    {
+                                        shopcount = 0;
+                                    }
+                                    
                                 }
 
                             }
