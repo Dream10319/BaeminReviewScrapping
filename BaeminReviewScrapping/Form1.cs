@@ -143,7 +143,7 @@ namespace BaeminReviewScrapping
                                             var dir = "Reviews";
                                             if(!Directory.Exists(dir))
                                             Directory.CreateDirectory(dir);
-                                            File.WriteAllText(string.Format(@"{0}\review-{1}-{2}.json", dir, locationNum.ToString(), shopnumber), review);
+                                            File.WriteAllText(string.Format(@"{0}\review-{1}-{2}-{3}.json", dir, locationNum.ToString(), shopnumber, j.ToString()), review);
                                             this.Invoke(new Action(() =>
                                             {
                                                 progressBar1.Value = (int)((10000 * catnum * totalcount) / (shopcount * 15));
