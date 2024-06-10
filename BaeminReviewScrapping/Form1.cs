@@ -17,6 +17,7 @@ namespace BaeminReviewScrapping
 {
     public partial class Form1 : Form
     {
+        Thread th;
         public Form1()
         {
             InitializeComponent();
@@ -24,6 +25,7 @@ namespace BaeminReviewScrapping
 
         private void button2_Click(object sender, EventArgs e)
         {
+            th.Abort();
             Application.Exit();
         }
 
@@ -31,7 +33,7 @@ namespace BaeminReviewScrapping
         {
             try
             {
-                Thread th = new Thread(new ThreadStart(() =>
+                th = new Thread(new ThreadStart(() =>
                 {
                     string filePath = @"locationinfo.txt"; // Adjust the path to where your file is stored.
                     Regex delimiterRegex = new Regex(@"[\s\t]+");
