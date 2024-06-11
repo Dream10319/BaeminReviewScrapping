@@ -36,6 +36,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.Lon = new System.Windows.Forms.TextBox();
             this.LocationNum = new System.Windows.Forms.Label();
+            this.Category = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
@@ -102,16 +103,27 @@
             // LocationNum
             // 
             this.LocationNum.AutoSize = true;
-            this.LocationNum.Location = new System.Drawing.Point(170, 48);
+            this.LocationNum.Location = new System.Drawing.Point(143, 48);
             this.LocationNum.Name = "LocationNum";
-            this.LocationNum.Size = new System.Drawing.Size(0, 13);
+            this.LocationNum.Size = new System.Drawing.Size(44, 13);
             this.LocationNum.TabIndex = 7;
+            this.LocationNum.Text = "location";
+            // 
+            // Category
+            // 
+            this.Category.AutoSize = true;
+            this.Category.Location = new System.Drawing.Point(193, 48);
+            this.Category.Name = "Category";
+            this.Category.Size = new System.Drawing.Size(48, 13);
+            this.Category.TabIndex = 8;
+            this.Category.Text = "category";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(376, 147);
+            this.Controls.Add(this.Category);
             this.Controls.Add(this.LocationNum);
             this.Controls.Add(this.Lon);
             this.Controls.Add(this.label2);
@@ -139,6 +151,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox Lon;
         private System.Windows.Forms.Label LocationNum;
+        private System.Windows.Forms.Label Category;
     }
 }
 

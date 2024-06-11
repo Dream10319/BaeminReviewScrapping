@@ -85,7 +85,7 @@ namespace BaeminReviewScrapping
                         dynamic data = jss.Deserialize<dynamic>(strReturn);
                         dynamic categories = data["data"]["displayCategories"];
 
-                        int locationNum = 0;
+                        int locationNum = 1;
                         foreach (var (Latitude, Longitude) in coordinates)
                         {
                             locationNum++;
@@ -99,6 +99,10 @@ namespace BaeminReviewScrapping
 
                             foreach (var category in categories)
                             {
+                                this.Invoke(new Action(() =>
+                                {
+                                    Category.Text = category["text"].ToString();
+                                }));
                                 int shopcount = 2000;
                                 int totalcount = 0;
                                 for (int i = 0; i <= (int)(shopcount / 25); i++)
